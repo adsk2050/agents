@@ -64,6 +64,7 @@ RimeModels = Literal[
 InworldModels = Literal[
     "inworld",
     "inworld/inworld-tts-2",
+    "inworld/inworld-tts-2-flash",
     "inworld/inworld-tts-1.5-max",
     "inworld/inworld-tts-1.5-mini",
     "inworld/inworld-tts-1.5",
@@ -126,6 +127,11 @@ def _has_aligned_transcript(model: str, extra_kwargs: dict[str, Any]) -> bool:
         return bool(extra_kwargs.get("add_timestamps"))
     if provider == "inworld":
         return extra_kwargs.get("timestamp_type") in ("WORD", "CHARACTER")
+    if provider == "assemblyai":
+        # Word timings are on by default on the service (word_boundaries=true),
+        # and the gateway forwards them as an aligned transcript, so this is
+        # opt-out rather than opt-in: only an explicit False turns them off.
+        return extra_kwargs.get("word_timestamps", True) is not False
     return False
 
 
